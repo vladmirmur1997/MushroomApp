@@ -60,16 +60,16 @@ import java.util.Date;
 
 public class WalkActivity extends AppCompatActivity implements ItemRemoveInterface{
     private MapView map = null; public IMapController myMapController;
+    GroundOverlay myGroundOverlay = new GroundOverlay();
+    ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+    public ItemizedIconOverlay<OverlayItem> ForestItemizedIconOverlay;
     private TextView locationText; private TextView rel_locText;
     private Walk walk; public Forest forest; public myDraw mydraw; public String type = "Белый";
     boolean flag = false; boolean flag_save = true; public int time; int num; //номер леса
     public Me me = new Me(); //тут храним текущие координаты и стрелку навигатора
-    DisplayMetrics metrics = new DisplayMetrics(); public File path;
+    DisplayMetrics metrics = new DisplayMetrics(); public File path; public PowerManager.WakeLock wakelock;
     public LocationManager locationManager; private FusedLocationProviderClient locationClient;
-    GroundOverlay myGroundOverlay = new GroundOverlay(); public PowerManager.WakeLock wakelock;
     private static final int LOCATION_PERMISSION_REQUEST = 1001;
-    ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-    public ItemizedIconOverlay<OverlayItem> ForestItemizedIconOverlay;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
