@@ -275,12 +275,12 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
             forest.addPoint(me.x, me.y);
             //rotate Arrow
             me.calc_rot_Arrow(walk);
-            //log
+            locationText.setText("Latitude: " + me.x + "\nLongitude: " + me.y);
+            /**
             Key key = forest.GetKey(me.x, me.y);
             int t = forest.gridmap.get(key).time;
             rel_locText.setText("size " + walk.x_traj.size());
-            locationText.setText("Latitude: " + me.x + "\nLongitude: " + me.y + "\nTime " + t);
-            //locationText.setText("фильтр: " + forest.walk_list.get(0).filter_map.get("Белый"));
+            //locationText.setText("фильтр: " + forest.walk_list.get(0).filter_map.get("Белый"));*/
         }
         time++;
     }

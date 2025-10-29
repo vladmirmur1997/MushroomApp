@@ -30,8 +30,7 @@ public class loc_gms_Service extends Service {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback; private Location location;
     public Context context;
-    public PowerManager.WakeLock wakelock; // Assuming this is already declared
-    // ... other service fields and methods
+    public PowerManager.WakeLock wakelock;
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
@@ -39,14 +38,13 @@ public class loc_gms_Service extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Bundle arguments = intent.getExtras();
         int type = 0;
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         NotificationChannel channel;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
-            channel = new NotificationChannel("CHANNEL_ID", "PennSkanvTicChannel", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("PennSkanvTic channel for foreground service notification");
+            channel = new NotificationChannel("CHANNEL_ID", "Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("channel for foreground service notification");
             notificationManager.createNotificationChannel(channel);
         }
         Notification notification =
@@ -65,7 +63,6 @@ public class loc_gms_Service extends Service {
         LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
                 .setMinUpdateDistanceMeters(0)
                 .build();
-        // 3. Create LocationCallback (where location data will be received)
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -75,8 +72,6 @@ public class loc_gms_Service extends Service {
                 sendMessageToActivity(x, y);
             }
         };
-        //sendMessageToActivity(60,30);
-        // 4. Request location updates
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -88,13 +83,10 @@ public class loc_gms_Service extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // 5. Crucially, remove location updates in onDestroy()
         if (fusedLocationClient != null && locationCallback != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
         wakelock.release();
-        // ... your existing code for releasing WakeLock:
     }
     private void sendMessageToActivity(double x, double y) {
         Intent intent = new Intent("GPS");

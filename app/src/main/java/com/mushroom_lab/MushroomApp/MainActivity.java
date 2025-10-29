@@ -32,20 +32,8 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
     public Context context; public float H_p; public float W_p;
     int num = 0; ArrayList<String> forests = new ArrayList<String>();
     ArrayAdapter<String> adapter; ListView forest_list_view; String selectedForest;
-    ScrollView scrollView; public double x; public double y; public int time = 0;
+    ScrollView scrollView;
     public TextView textView;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                x = intent.getDoubleExtra("x", 0);
-                y = intent.getDoubleExtra("y", 0);
-            } catch (Exception e) {};
-            time++;
-            textView.setText("Latitude: " + x + "\nLongitude: " + y + " time " + time);
-            //Toast.makeText(context, "recieved ", Toast.LENGTH_SHORT).show();
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,25 +63,6 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
                 toast.show();
             }
         });
-        textView = findViewById(R.id.textView);
-        //Intent intent = new Intent(this, myService.class);
-        //ContextCompat.startForegroundService(this, intent);
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Unregister the receiver
-        unregisterReceiver(broadcastReceiver);
-        Intent intent = new Intent(this, loc_gms_Service.class);
-        stopService(intent);
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter("GPS");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(broadcastReceiver, filter, RECEIVER_EXPORTED);
-        }
     }
     void calc_screen_size(Context context){
         Resources resources = context.getResources();
@@ -170,5 +139,4 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
         }
 
     }
-
 }
