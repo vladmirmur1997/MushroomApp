@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AddBtnStyle"
+           parent="ThemeOverlay.AppCompat">
+        <item name="android:backgroundTint">@color/AddBtnColor</item>
+    </style>
+    <style name="DelBtnStyle"
+        parent="ThemeOverlay.AppCompat">
+        <item name="android:backgroundTint">@color/DelBtnColor</item>
+    </style>
+    <style name="BtnStyle"
+        parent="ThemeOverlay.AppCompat">
+        <item name="android:backgroundTint">@color/BtnColor</item>
+    </style>
+    <style name="SettingBtnStyle"
+        parent="ThemeOverlay.AppCompat">
+        <item name="android:backgroundTint">@color/SettingBtnColor</item>
+    </style>
+</resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="25dp"
+    tools:context=".MainActivity">
+    <ScrollView
+        android:id="@+id/F_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ListView
+                android:id="@+id/ForestList"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+            </ListView>
+        </LinearLayout>
+    </ScrollView>
+    <EditText
+        android:id="@+id/foresttext"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:text="лес1"
+        app:layout_constraintLeft_toLeftOf="@id/puskBtn"
+        app:layout_constraintTop_toBottomOf="@id/puskBtn" />
+    <Button
+        android:id="@+id/newforestBtn"
+        style="@style/AddBtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="new_forest"
+        android:text="Добавить новый лес"
+        app:layout_constraintTop_toBottomOf="@id/foresttext"
+        app:layout_constraintLeft_toLeftOf="parent" />
+    <Button
+        android:id="@+id/deleteBtn"
+        android:theme="@style/DelBtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="delete_forest"
+        android:text="Удалить лес"
+        app:layout_constraintTop_toBottomOf="@id/newforestBtn"
+        app:layout_constraintLeft_toLeftOf="@id/newforestBtn" />
+
+    <Button
+        android:id="@+id/puskBtn"
+        android:theme="@style/BtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="start"
+        android:text="Начать прогулку"
+        app:layout_constraintLeft_toLeftOf="@id/F_scroll"
+        app:layout_constraintTop_toBottomOf="@id/F_scroll" />
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintTop_toBottomOf="@id/deleteBtn"
+        app:layout_constraintLeft_toLeftOf="@id/deleteBtn" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

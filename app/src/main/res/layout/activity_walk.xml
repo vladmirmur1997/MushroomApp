@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/walk"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WalkActivity">
+
+    <TextView
+        android:id="@+id/locText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Coordinates"
+        app:layout_constraintLeft_toLeftOf="@id/map"
+        app:layout_constraintTop_toBottomOf="@id/map" />
+
+    <Button
+        android:id="@+id/findBtn"
+        android:theme="@style/AddBtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="find"
+        android:text="Находка"
+        app:layout_constraintLeft_toLeftOf="@id/map"
+        app:layout_constraintTop_toBottomOf="@id/locText"/>
+
+    <Button
+        android:id="@+id/statistic_but"
+        android:theme="@style/BtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="call_gridmap"
+        android:text="Статистика"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/locText" />
+    <Button
+        android:id="@+id/saveBut"
+        android:theme="@style/BtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="save_walk"
+        android:text="Сохранить"
+        app:layout_constraintLeft_toLeftOf="@id/findBtn"
+        app:layout_constraintTop_toBottomOf="@id/findBtn" />
+    <Button
+        android:id="@+id/loadBut"
+        android:theme="@style/BtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Прошлые походы"
+        android:onClick="load_walk"
+        app:layout_constraintLeft_toLeftOf="@id/saveBut"
+        app:layout_constraintTop_toBottomOf="@id/saveBut" />
+    <Button
+        android:id="@+id/typeBtn"
+        android:theme="@style/SettingBtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="set_type"
+        android:text="Настройки"
+        app:layout_constraintRight_toRightOf="@id/statistic_but"
+        app:layout_constraintTop_toBottomOf="@id/statistic_but"/>
+    <Button
+        android:id="@+id/markerBtn"
+        android:theme="@style/AddBtnStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="add_marker"
+        android:text="Добавить метку"
+        app:layout_constraintRight_toRightOf="@id/typeBtn"
+        app:layout_constraintTop_toBottomOf="@id/typeBtn"/>
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/relText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Relative Coords, m"
+        app:layout_constraintLeft_toRightOf="@id/locText"
+        app:layout_constraintTop_toBottomOf="@id/map" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

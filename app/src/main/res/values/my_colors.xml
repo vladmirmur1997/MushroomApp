@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="BackColor">#3FFA76</color>
+    <color name="TrajColor">#80439AFA</color>
+    <color name="MushColor">#F44336</color>
+    <color name="WhiteMushColor">#E6D0A4</color>
+    <color name="RedMushColor">#B1362C</color>
+    <color name="PdbrzColor">#594711</color>
+    <color name="OrColor">#FF8406</color>
+    <color name="LColor">#FAC854</color>
+    <color name="CellColor">#4EEF4E</color>
+    <color name="BtnColor">#48529E</color>
+    <color name="AddBtnColor">#037503</color>
+    <color name="DelBtnColor">#696A6D</color>
+    <color name="SettingBtnColor">#98A401</color>
+</resources>
