@@ -1,6 +1,5 @@
 package com.mushroom_lab.MushroomApp;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
@@ -9,13 +8,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-
 import com.mushroom_lab.MushroomApp.Forest.Filter;
 import com.mushroom_lab.MushroomApp.Forest.Forest;
 import com.mushroom_lab.MushroomApp.Walk.Walk;
-
 import java.util.HashMap;
 import java.util.Map;
+
 public class MushTypeImageActivity extends AppCompatActivity {
     public SparseBooleanArray selected; public Walk walk; public boolean flag_traj;
     public boolean flag = false; public ListView MushList; public CheckBox checkbox;

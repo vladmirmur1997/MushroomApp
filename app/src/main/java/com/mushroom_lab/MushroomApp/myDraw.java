@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-
 import com.mushroom_lab.MushroomApp.Forest.Cell;
 import com.mushroom_lab.MushroomApp.Forest.Forest;
 import com.mushroom_lab.MushroomApp.Forest.Key;
@@ -138,7 +137,6 @@ public class myDraw {
         for (Walk w: forest.walk_list) {
             draw_walk_mush(forest, w, mCanvas);
         }
-        //draw center point
     }
     public Integer calc_num_grib_of_selected_types(Forest forest, Walk walk, Key key){
         int number = 0;

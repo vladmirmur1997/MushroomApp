@@ -33,15 +33,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.mushroom_lab.MushroomApp.Forest.Filter;
 import com.mushroom_lab.MushroomApp.Forest.Forest;
-import com.mushroom_lab.MushroomApp.Forest.Key;
 import android.widget.Toast;
 import com.mushroom_lab.MushroomApp.Walk.Me.Me;
 import com.mushroom_lab.MushroomApp.Walk.Walk;
-
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;

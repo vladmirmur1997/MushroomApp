@@ -1,13 +1,11 @@
 package com.mushroom_lab.MushroomApp;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.mushroom_lab.MushroomApp.Forest.Forest;
 import com.mushroom_lab.MushroomApp.Walk.Walk;
 
