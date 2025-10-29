@@ -289,7 +289,6 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         @Override
         public boolean onItemLongPress(int arg0, OverlayItem arg1) {
             // TODO Auto-generated method stub
-            //ForestRemoveDialog dialog = new ForestRemoveDialog();
             ItemRemoveDialog dialog = new ItemRemoveDialog();
             Bundle args = new Bundle();
             args.putInt("orient", arg0);
