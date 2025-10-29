@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
     int num = 0; ArrayList<String> forests = new ArrayList<String>();
     ArrayAdapter<String> adapter; ListView forest_list_view; String selectedForest;
     ScrollView scrollView;
-    public TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
