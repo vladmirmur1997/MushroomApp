@@ -20,14 +20,22 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v1
+      - name: Set Up JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: 11
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '17'
+          cache: 'gradle'
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
-      - name: Build with Gradle
+
+      # Run Tests Build
+      - name: Run gradle tests
+        run: ./gradlew test
+
+      # Run Build Project
+      - name: Build gradle project
         run: ./gradlew build
 
       - name: Build APK
