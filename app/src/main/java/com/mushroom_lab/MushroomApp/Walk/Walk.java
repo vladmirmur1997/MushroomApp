@@ -1,4 +1,6 @@
 package com.mushroom_lab.MushroomApp.Walk;
+import android.database.sqlite.SQLiteDatabase;
+
 import com.mushroom_lab.MushroomApp.Grib.Grib;
 import java.io.File;
 import java.io.FileWriter;
@@ -66,6 +68,20 @@ public class Walk implements Serializable{
         }
         catch(IOException ex){
             System.out.println(ex.getMessage());
+        }
+    }
+    public void saveDb(SQLiteDatabase db, int numForest, String name, boolean flag_save) {
+        for (Grib gr: grib_list) {
+            //db.execSQL("INSERT INTO mushs (forest, walk_name, type, x, y) VALUES (0, 0, 'white', 0, 0)");
+            db.execSQL("INSERT INTO mushs (forest, walk_name, type, x, y) " +
+                    "VALUES (" + numForest + ", '" + name + "', '" + gr.type + "', " +
+                    gr.x + ", " + gr.y + ")");
+        }
+        for (int i=0; i < x_traj.size(); i++) {
+            //db.execSQL("INSERT INTO trajs (forest, walk, x, y) VALUES (0, 0, 0, 0)");
+            db.execSQL("INSERT INTO trajs (forest, walk_name, x, y) " +
+                    "VALUES (" + numForest + ", '" + name + "', " + x_traj.get(i) + ", " +
+                    y_traj.get(i) + ")");
         }
     }
 }

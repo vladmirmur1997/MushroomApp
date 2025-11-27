@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationManager;
@@ -66,7 +68,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
     public Me me = new Me(); //тут храним текущие координаты и стрелку навигатора
     DisplayMetrics metrics = new DisplayMetrics(); public File path; public PowerManager.WakeLock wakelock;
     public LocationManager locationManager; private FusedLocationProviderClient locationClient;
-    private static final int LOCATION_PERMISSION_REQUEST = 1001;
+    private static final int LOCATION_PERMISSION_REQUEST = 1001; SQLiteDatabase db;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,7 +102,8 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
                     forest.walk_list.clear();
                     forest.walk_list.add(walk);
                     forest.walk_filter_map = f_walks.filter_map; //какие прогулки подгрузить
-                    forest.get_walks();
+                    forest.get_walks(db);
+                    //тут надо подгрузить из БД
                 }
                 if (f_type != null){
                     walk.filter_map = f_type.filter_map; //какие типы грибов рисовать
@@ -145,6 +148,8 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         //location
         getCurrentLocation();
         startLocService();
+        //DataBases
+        db = getBaseContext().openOrCreateDatabase("mushs.db", MODE_PRIVATE, null);
     }
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -164,6 +169,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         Intent intent = new Intent(this, loc_gms_Service.class);
         stopService(intent);
         //wakelock.release();
+        db.close();
     }
     public void startLocService(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -204,20 +210,34 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         //current walk has zero number
         //we save it with number_of_walks + 1
         Date currentTime = Calendar.getInstance().getTime();
-        //чтобы одну прогулку не сохранить дважды, а перезаписывать,
-        if (flag_save) {
-            forest.number_of_walks++;
-            flag_save = false;
-            walk.name = currentTime.toString();
-            forest.all_walks.add(currentTime.toString());
+        //walk database
+        Cursor query = db.rawQuery("SELECT * FROM walks WHERE forest = " + forest.num + ";", null);
+        int walk_n = 1; String name = "";//walk_n = _id, в принципе можно убрать этот столбец (только для walks)
+        if (query.getCount() > 0) {
+            query.moveToLast();
+            walk_n = (int) query.getLong(0)+1; name = query.getString(3);
+        } else {
+            Cursor query1 = db.rawQuery("SELECT * FROM walks", null);
+            walk_n = query1.getCount()+1;
+            query1.close();
         }
-        forest.upd_num_walks_file();
-        walk.SaveWalk(path, forest.num, forest.number_of_walks);
+        //может проще сделать, чтобы walk_n было числом прогулок в данном лесу (getCount+1),
+        //а искать по номеру + номер леса?
+        query.close();
+        //если уже сохраняли, удалить последнюю сохраненную
+        if (!flag_save) {
+            db.execSQL("DELETE FROM walks WHERE walk_name = '" + name + "' AND forest = " + forest.num);
+            db.execSQL("DELETE FROM mushs WHERE walk_name = '" + name + "' AND forest = " + forest.num);
+            db.execSQL("DELETE FROM trajs WHERE walk_name = '" + name + "' AND forest = " + forest.num);
+            //лес можно убрать, имя и так уникально
+        }
+        db.execSQL("INSERT INTO walks (forest, walk_num, walk_name) " +
+                "VALUES (" + forest.num + ", " + walk_n
+                + ", '" + currentTime.toString() + "')");
+        walk.saveDb(db, forest.num, currentTime.toString(), flag_save);
+        flag_save = false;
         forest.walk_filter_map.put(currentTime.toString(), false);
-        Toast toast = Toast.makeText(this,
-                "saved with N= " + forest.number_of_walks, Toast.LENGTH_LONG);
-        toast.show();
-        forest.write_all_walks();
+        Toast.makeText(this, "saved " + walk_n + ",forest = " + forest.num, Toast.LENGTH_SHORT).show();
     }
     public void load_walk(View v){ //LoadBtn
         //forest.get_walk(); previous walk
@@ -259,7 +279,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
     }
     public void timer_upd(){
         if (time == 0) {
-            forest = new Forest(walk, me.x, me.y, num, path);
+            forest = new Forest(walk, me.x, me.y, num, path, db);
             map.getOverlays().add(myGroundOverlay);
             items = forest.read_markers();
             ForestItemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(
@@ -363,5 +383,18 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
             // If permission is denied, show message
             locationText.setText("Location permission denied");
         }
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("forest", forest);
+        outState.putSerializable("walk", walk);
+        super.onSaveInstanceState(outState);
+    }
+    // получение ранее сохраненного состояния
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        forest = (Forest) savedInstanceState.getSerializable("forest");
+        walk = (Walk) savedInstanceState.getSerializable("walk");
     }
 }

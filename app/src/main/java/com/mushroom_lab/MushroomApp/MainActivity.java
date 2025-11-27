@@ -2,9 +2,12 @@ package com.mushroom_lab.MushroomApp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +28,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements RemoveInterface {
     private final static String TAG = "MainActivity";
     public Context context; public float H_p; public float W_p;
-    int num = 0; ArrayList<String> forests = new ArrayList<String>();
-    ArrayAdapter<String> adapter; ListView forest_list_view; String selectedForest;
-    ScrollView scrollView;
+    String selectedForest;
+    ScrollView scrollView; ListView ForList; int ID = 0 ;
+    SQLiteDatabase db; Cursor userCursor; SimpleCursorAdapter userAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,25 +41,37 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
         calc_screen_size(this);
         scrollView.setLayoutParams(new ViewGroup.LayoutParams((int) W_p, (int) H_p/2));
         //читаем список лесов
-        forests.add("Лес0"); //в списке лесов в файле не сохраняется
-        get_forest_list();
-        forest_list_view = findViewById(R.id.ForestList);
-        adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, forests);
-        //устанавливаем для списка адаптер
-        forest_list_view.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        forest_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+        ForList = findViewById(R.id.ForestList);
+        ForList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id)
             {
-                num = position;
-                selectedForest = adapter.getItem(position);
+                ID = (int)id;
+                Cursor query = db.rawQuery("SELECT * FROM forests WHERE _id = " + id + ";", null);
+                query.moveToFirst();
+                selectedForest = query.getString(1);
+                query.close();
                 Toast toast = Toast.makeText(v.getContext(),
-                        "выбран лес " + forests.get(num) + ", номер: " + num, Toast.LENGTH_LONG);
+                        "выбран лес " + selectedForest, Toast.LENGTH_LONG);
                 toast.show();
             }
         });
+
+        db = getBaseContext().openOrCreateDatabase("mushs.db", MODE_PRIVATE, null);
+        //создаем все таблицы
+        db.execSQL("DROP TABLE IF EXISTS walks");
+        db.execSQL("DROP TABLE IF EXISTS mushs");
+        db.execSQL("DROP TABLE IF EXISTS trajs");
+        db.execSQL("DROP TABLE IF EXISTS forests");
+        db.execSQL("CREATE TABLE IF NOT EXISTS forests (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS mushs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, type TEXT, x REAL, y REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS trajs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, x REAL, y REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS walks (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_num INTEGER, walk_name TEXT)");
+        //добавляем лес по умолчанию
+        Cursor query = db.rawQuery("SELECT * FROM forests;", null);
+        if (query.getCount() ==0 ){db.execSQL("INSERT INTO forests (name) VALUES ('Les1')");}
+        upd_adapter(); //query.close();
     }
     void calc_screen_size(Context context){
         Resources resources = context.getResources();
@@ -66,17 +81,28 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
     }
     public void start(View v) {
         Intent intent = new Intent(this, WalkActivity.class);
-        intent.putExtra("Forest", num);
+        //intent.putExtra("Forest", num);
+        intent.putExtra("Forest", ID);
         startActivity(intent);
+    }
+    public void upd_adapter() {
+        //notfyDataSetChanged not working for cursor adapter
+        Cursor query = db.rawQuery("SELECT * FROM forests;", null);
+        String[] headers = new String[] {"_id", "name"};
+        ListView ForList = findViewById(R.id.ForestList);
+        userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
+                query, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        ForList.setAdapter(userAdapter);
+        //query.close();
     }
     public void new_forest(View v) {
         EditText ForestText = findViewById(R.id.foresttext);
         String forestName = ForestText.getText().toString();
         if(!forestName.isEmpty()){
-            adapter.add(forestName);
-            ForestText.setText("");
-            adapter.notifyDataSetChanged();
-            write_forest_list(forestName+"\n", true);
+            //Db
+            //db.execSQL("INSERT INTO forests (name) VALUES ('Les2')");
+            db.execSQL("INSERT INTO forests (name) VALUES ('" + forestName + "')");
+            upd_adapter();
         }
     }
     public void delete_forest(View v) {
@@ -92,45 +118,23 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
                     "Вначале нажмите на нужный лес", Toast.LENGTH_LONG);
             toast.show();
         }
-        //adapter.remove(selectedForest);
-    }
-    public void get_forest_list() {
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(
-                    getFilesDir() + "/forest_list.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                forests.add(line);
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void write_forest_list(String name, boolean append) {
-        try(FileWriter f_list = new FileWriter(getFilesDir()+"/forest_list.txt", append)) {
-            f_list.write(name);
-            f_list.flush();
-        }
-        catch(IOException ex){
-            Toast toast = Toast.makeText(this,
-                    ex.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
-        }
-        Toast toast = Toast.makeText(this,
-                getFilesDir() + "/forest_list.txt", Toast.LENGTH_LONG);
-        toast.show();
     }
     public void remove(String name) {
-        adapter.remove(name);
-        adapter.notifyDataSetChanged();
         //rewrite forest file
-        write_forest_list("", false);
-        for (int i = 0; i < forests.size(); i++){
-            write_forest_list(forests.get(i) + "\n", true);
+        if (ID != 0) {
+            db.execSQL("DELETE FROM forests WHERE _id = " + ID);
+            //delete all walks, trajs, mushs
+            db.execSQL("DELETE FROM walks WHERE forest = " + ID);
+            db.execSQL("DELETE FROM mushs WHERE forest = " + ID);
+            db.execSQL("DELETE FROM trajs WHERE forest = " + ID);
         }
+        upd_adapter();
 
+    }
+    public void onDestroy(){
+        super.onDestroy();
+        // Закрываем подключение и курсор
+        db.close();
+        userCursor.close();
     }
 }

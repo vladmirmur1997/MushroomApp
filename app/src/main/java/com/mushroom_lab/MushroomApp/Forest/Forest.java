@@ -1,4 +1,7 @@
 package com.mushroom_lab.MushroomApp.Forest;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import com.mushroom_lab.MushroomApp.Grib.Grib;
 import com.mushroom_lab.MushroomApp.Walk.Walk;
 import org.osmdroid.util.GeoPoint;
@@ -24,17 +27,25 @@ public class Forest implements Serializable {
     public Map<String, Boolean> walk_filter_map = new HashMap<String, Boolean>(); //types selection for image
     public Map<Key, Cell> gridmap = new HashMap<Key, Cell>();
         //сетка леса, ключ = массив из 2 элементов
-    public Forest(Walk walk, double x, double y, int num, File path) {
+    public Forest(Walk walk, double x, double y, int num, File path, SQLiteDatabase db) {
         walk_list.add(walk); this.num = num; this.path = path;
         this.x0 = x; this.y0 = y;
         double cos_lat = Math.cos(Math.toRadians(x0));
         grid_stepsize_x = grid_stepsize_y*cos_lat;
         get_forest_info();
         read_allwalks();
-        for (int i = 0; i < all_walks.size(); i++ ){
-            //default imaging og all mushroom types:
-            walk_filter_map.put(all_walks.get(i), false);
+        //for (int i = 0; i < all_walks.size(); i++ ){
+        //    walk_filter_map.put(all_walks.get(i), false);
+        //}
+        //теперь то же с бд:
+        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = '" + num + "';", null);
+        cur.moveToFirst();
+        for (int i = 0; i < cur.getCount(); i++ ){
+            String name = cur.getString(3);
+            walk_filter_map.put(name, false);
+            cur.moveToNext();
         }
+        cur.close();
     }
     public void get_max(){
         for (Key key : gridmap.keySet()){
@@ -107,23 +118,30 @@ public class Forest implements Serializable {
             addGribCell(key, gr.type);
         }
     }
-    public void get_walks() {
-        //previous walk!
-        for (int i = 0; i < all_walks.size(); i++){
+    public void get_walks(SQLiteDatabase db) {
+        //all_walks.size()
+        /*for (int i = 0; i < all_walks.size(); i++){
             String name = all_walks.get(i);
             if(walk_filter_map.get(name)){
                 Walk walk = new Walk(0,0);
-                Get_xy(walk, path, i+1);
+                Get_xy(walk, path, i+1, db);
+                walk_list.add(walk);
+                recalcCell(walk);
+            }
+        }*/
+        for (String name : walk_filter_map.keySet()){
+            if (walk_filter_map.get(name)){
+                Walk walk = new Walk(0,0);
+                Get_xy(walk, name, db); //N не нужен
                 walk_list.add(walk);
                 recalcCell(walk);
             }
         }
         //так мы обновляем только грибы, не время
     }
-    public void Get_xy(Walk walk, File path, int N) {
-        //previous walk!
+    public void Get_xy(Walk walk, String name, SQLiteDatabase db) {
         //get trajectory
-        BufferedReader reader;
+        /*BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(
                     path + "/" + num + "/" + N + "/trajectory.txt"));
@@ -151,7 +169,29 @@ public class Forest implements Serializable {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        //DataBase, mushs
+        Cursor cur =  db.rawQuery("SELECT * FROM mushs WHERE walk_name = '" + name + "';", null);
+        cur.moveToFirst();
+        do{
+            Double x1 = cur.getDouble(4);
+            Double y1 = cur.getDouble(5);
+            String type = cur.getString(3);
+            walk.grib_list.add(new Grib(x1,y1,type));
+            // do what ever you want here
+        } while(cur.moveToNext());
+        cur.close();
+        //DataBase, trajs
+        cur =  db.rawQuery("SELECT * FROM trajs WHERE walk_name = '" + name + "';", null);
+        cur.moveToFirst();
+        do{
+            Double x1 = cur.getDouble(3);
+            Double y1 = cur.getDouble(4);
+            walk.x_traj.add(x1); walk.y_traj.add(y1);
+            // do what ever you want here
+        } while(cur.moveToNext());
+        cur.close();
+
     }
     public void get_forest_info() {
         BufferedReader reader;
