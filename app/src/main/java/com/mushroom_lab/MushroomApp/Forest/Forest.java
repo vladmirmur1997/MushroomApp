@@ -18,12 +18,11 @@ import java.util.Map;
 public class Forest implements Serializable {
     public double x0; public double y0; //начальная точка отсчета леса
     Double grid_stepsize_y = 0.001D; Double grid_stepsize_x;//linear size of cell
-    public int num; public int number_of_walks = 0; //число прогулок, сохр. в файлы!
+    public int num; //число прогулок, сохр. в файлы!
     public File path; public boolean traj_flag = true;
     //добавить классы тропинка, ориентир, список объектов классов потом в reDraw
     public int max_num = 0; //максимальное число грибов в cell
     public ArrayList<Walk> walk_list = new ArrayList<>(); //loaded walks
-    public ArrayList<String> all_walks = new ArrayList<>();
     public Map<String, Boolean> walk_filter_map = new HashMap<String, Boolean>(); //types selection for image
     public Map<Key, Cell> gridmap = new HashMap<Key, Cell>();
         //сетка леса, ключ = массив из 2 элементов
