@@ -31,10 +31,7 @@ public class Forest implements Serializable {
         this.x0 = x; this.y0 = y;
         double cos_lat = Math.cos(Math.toRadians(x0));
         grid_stepsize_x = grid_stepsize_y*cos_lat;
-        //for (int i = 0; i < all_walks.size(); i++ ){
-        //    walk_filter_map.put(all_walks.get(i), false);
-        //}
-        //теперь то же с бд:
+        //default false filter
         Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = " + num + ";", null);
         cur.moveToFirst();
         for (int i = 0; i < cur.getCount(); i++ ){
