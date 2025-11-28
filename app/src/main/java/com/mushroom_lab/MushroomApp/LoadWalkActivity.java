@@ -27,8 +27,7 @@ import java.util.Map;
 
 public class LoadWalkActivity extends AppCompatActivity implements RemoveInterface {
     public SparseBooleanArray selected;
-    SQLiteDatabase db;
-    SimpleCursorAdapter userAdapter;
+    SQLiteDatabase db; SimpleCursorAdapter userAdapter;
     public float H_p; public float W_p; public ScrollView scrollView;
     public boolean flag = false; public boolean remove_flag = false;
     public ListView walkList; public Forest forest;
