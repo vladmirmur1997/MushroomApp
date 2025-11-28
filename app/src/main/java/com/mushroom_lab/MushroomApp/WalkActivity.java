@@ -209,19 +209,20 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         Date currentTime = Calendar.getInstance().getTime();
         //walk database
         Cursor query = db.rawQuery("SELECT * FROM walks WHERE forest = " + forest.num + ";", null);
-        int walk_n = 1; String name = "";//walk_n = _id, в принципе можно убрать этот столбец (только для walks)
+        String name = "";
+        //узнаем имя последней прогулки, чтобы ее удалять при перезаписи
         if (query.getCount() > 0) {
             query.moveToLast();
-            walk_n = (int) query.getLong(0)+1; name = query.getString(3);
-        } else {
-            Cursor query1 = db.rawQuery("SELECT * FROM walks", null);
-            walk_n = query1.getCount()+1;
-            query1.close();
+            name = query.getString(3);
         }
+        query.close();
+        query = db.rawQuery("SELECT * FROM walks", null);
+        int walk_n = query.getCount() + 1;
+        query.close();
+        //walk_n = _id, в принципе можно убрать этот столбец (только для walks)
         //может проще сделать, чтобы walk_n было числом прогулок в данном лесу (getCount+1),
         //а искать по номеру + номер леса?
-        query.close();
-        //если уже сохраняли, удалить последнюю сохраненную
+        //если уже сохраняли, удалить последнюю сохраненную:
         if (!flag_save) {
             db.execSQL("DELETE FROM walks WHERE walk_name = '" + name + "' AND forest = " + forest.num);
             db.execSQL("DELETE FROM mushs WHERE walk_name = '" + name + "' AND forest = " + forest.num);
