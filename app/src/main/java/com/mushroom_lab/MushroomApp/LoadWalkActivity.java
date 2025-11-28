@@ -59,7 +59,7 @@ public class LoadWalkActivity extends AppCompatActivity implements RemoveInterfa
     }
     public void upd_adapter() {
         //notfyDataSetChanged not working for cursor adapter
-        Cursor query = db.rawQuery("SELECT * FROM walks WHERE forest = '" + forest.num + "';", null);
+        Cursor query = db.rawQuery("SELECT * FROM walks WHERE forest = " + forest.num + ";", null);
         String[] headers = new String[] {"walk_name"};
         //userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
         //        query, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
@@ -76,9 +76,9 @@ public class LoadWalkActivity extends AppCompatActivity implements RemoveInterfa
     }
     public void update_pos(){
         selected = walkList.getCheckedItemPositions();
-        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = '" + forest.num + "';", null);
+        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = " + forest.num + ";", null);
         cur.moveToFirst();
-        for (int i = 0; i < selected.size(); i++) {
+        for (int i = 0; i < cur.getCount(); i++) {
             //"name" -> true/false
             //filter_map.put(forest.all_walks.get(i), selected.get(i));
             String name = cur.getString(3);
@@ -107,7 +107,7 @@ public class LoadWalkActivity extends AppCompatActivity implements RemoveInterfa
     }
     public void setChecked(){
         //чтобы если ничего не трогать(отметки), все равно возвращало не пустой фильтр
-        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = '" + forest.num + "';", null);
+        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = " + forest.num + ";", null);
         cur.moveToFirst();
         for (int i = 0; i < cur.getCount(); i++){
             //отмечаем в соответствии с фильтром в валк

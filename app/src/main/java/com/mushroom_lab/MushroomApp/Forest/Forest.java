@@ -36,7 +36,7 @@ public class Forest implements Serializable {
         //    walk_filter_map.put(all_walks.get(i), false);
         //}
         //теперь то же с бд:
-        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = '" + num + "';", null);
+        Cursor cur =  db.rawQuery("SELECT * FROM walks WHERE forest = " + num + ";", null);
         cur.moveToFirst();
         for (int i = 0; i < cur.getCount(); i++ ){
             String name = cur.getString(3);

@@ -100,12 +100,10 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
                     forest.walk_list.add(walk);
                     forest.walk_filter_map = f_walks.filter_map; //какие прогулки подгрузить
                     forest.get_walks(db);
-                    //тут надо подгрузить из БД
                 }
                 if (f_type != null){
                     walk.filter_map = f_type.filter_map; //какие типы грибов рисовать
                     forest.traj_flag = flag_traj;
-                    //можно сделать напрямую walk.filtermap, а не в resume, ведь он уже создан
                 }
                 if (type_chosed != null){
                     type = type_chosed;
@@ -197,6 +195,8 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
     }
     public void call_gridmap(View v) {   //Statistic Button
         flag = !flag;
+        rel_locText.setText("size " + forest.walk_filter_map.size());
+
     }
     public void set_type(View v) {   //Type Button
         Intent intent = new Intent(this, MushTypeImageActivity.class);
@@ -292,8 +292,6 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
             me.calc_rot_Arrow(walk);
             locationText.setText("Latitude: " + me.x + "\nLongitude: " + me.y);
             /**
-            Key key = forest.GetKey(me.x, me.y);
-            int t = forest.gridmap.get(key).time;
             rel_locText.setText("size " + walk.x_traj.size());
             //locationText.setText("фильтр: " + forest.walk_list.get(0).filter_map.get("Белый"));*/
         }
