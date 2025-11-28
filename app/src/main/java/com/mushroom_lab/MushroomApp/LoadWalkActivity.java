@@ -91,7 +91,6 @@ public class LoadWalkActivity extends AppCompatActivity implements RemoveInterfa
         WalkRemoveDialog dialog = new WalkRemoveDialog();
         //Bundle args = new Bundle();
         dialog.show(getSupportFragmentManager(), "custom");
-        int N = filter_map.size();
     }
     public void remove()
     {
@@ -121,7 +120,7 @@ public class LoadWalkActivity extends AppCompatActivity implements RemoveInterfa
         filter_map = forest.walk_filter_map;
     }
     public void select_all(View v){
-        for (int i = 0; i < selected.size(); i++) {            //forest.all_walks.size()
+        for (int i = 0; i < filter_map.size(); i++) {            //forest.all_walks.size()
             walkList.setItemChecked(i, flag);
         }
         flag = !flag;
