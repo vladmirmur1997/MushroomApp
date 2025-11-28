@@ -60,10 +60,10 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
 
         db = getBaseContext().openOrCreateDatabase("mushs.db", MODE_PRIVATE, null);
         //создаем все таблицы
-        db.execSQL("DROP TABLE IF EXISTS walks");
+        /*db.execSQL("DROP TABLE IF EXISTS walks");
         db.execSQL("DROP TABLE IF EXISTS mushs");
         db.execSQL("DROP TABLE IF EXISTS trajs");
-        db.execSQL("DROP TABLE IF EXISTS forests");
+        db.execSQL("DROP TABLE IF EXISTS forests");*/
         db.execSQL("CREATE TABLE IF NOT EXISTS forests (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS mushs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, type TEXT, x REAL, y REAL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS trajs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, x REAL, y REAL)");

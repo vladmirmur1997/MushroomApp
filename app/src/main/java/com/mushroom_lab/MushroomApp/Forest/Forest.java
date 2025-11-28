@@ -32,8 +32,6 @@ public class Forest implements Serializable {
         this.x0 = x; this.y0 = y;
         double cos_lat = Math.cos(Math.toRadians(x0));
         grid_stepsize_x = grid_stepsize_y*cos_lat;
-        get_forest_info();
-        read_allwalks();
         //for (int i = 0; i < all_walks.size(); i++ ){
         //    walk_filter_map.put(all_walks.get(i), false);
         //}
@@ -119,16 +117,6 @@ public class Forest implements Serializable {
         }
     }
     public void get_walks(SQLiteDatabase db) {
-        //all_walks.size()
-        /*for (int i = 0; i < all_walks.size(); i++){
-            String name = all_walks.get(i);
-            if(walk_filter_map.get(name)){
-                Walk walk = new Walk(0,0);
-                Get_xy(walk, path, i+1, db);
-                walk_list.add(walk);
-                recalcCell(walk);
-            }
-        }*/
         for (String name : walk_filter_map.keySet()){
             if (walk_filter_map.get(name)){
                 Walk walk = new Walk(0,0);
@@ -140,37 +128,6 @@ public class Forest implements Serializable {
         //так мы обновляем только грибы, не время
     }
     public void Get_xy(Walk walk, String name, SQLiteDatabase db) {
-        //get trajectory
-        /*BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(
-                    path + "/" + num + "/" + N + "/trajectory.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                String[] coords = line.split(" ");
-                walk.x_traj.add(Double.parseDouble(coords[0]));
-                walk.y_traj.add(Double.parseDouble(coords[1]));
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //get mushrooms
-        try {
-            reader = new BufferedReader(new FileReader(
-                    path + "/" + num + "/" + N + "/mushrooms.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                String[] coords = line.split(" ");
-                walk.grib_list.add(new Grib(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), coords[2]));
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //DataBase, mushs
         Cursor cur =  db.rawQuery("SELECT * FROM mushs WHERE walk_name = '" + name + "';", null);
         cur.moveToFirst();
         do{
@@ -192,47 +149,6 @@ public class Forest implements Serializable {
         } while(cur.moveToNext());
         cur.close();
 
-    }
-    public void get_forest_info() {
-        BufferedReader reader;
-        try {
-            //try to open forest folder with initial coords file
-            reader = new BufferedReader(new FileReader(
-                    path + "/" + num + "/Forest_initial_coordinates.txt"));
-            String line = reader.readLine();
-            reader.close();
-            String[] coords = line.split(" ");
-            this.x0 = Double.parseDouble(coords[0]); this.y0 = Double.parseDouble(coords[1]);
-            //try to read number of walks
-            reader = new BufferedReader(new FileReader(
-                    path + "/" + num + "/Walks_number.txt"));
-            number_of_walks = Integer.valueOf(reader.readLine());
-            reader.close();
-            //First initialization of new forest:
-        } catch (IOException e) {
-            //make folder for forest
-            File directory = new File(
-                    path + "/" + num); //Integer.toString(num));
-            directory.mkdirs();
-            //make initial coords file
-            try (FileWriter coords = new FileWriter(
-                    path + "/" + num + "/Forest_initial_coordinates.txt", false)) {
-                coords.write(x0 + " " + y0);
-                coords.flush();
-                //coords.close();
-            } catch (IOException ex) {}
-        }
-        upd_num_walks_file();
-    }
-    public void upd_num_walks_file(){
-        //make num
-        try(FileWriter number = new FileWriter(path + "/" + num + "/Walks_number.txt", false)) {
-            number.write(Integer.toString(number_of_walks));
-            number.flush();
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        }
     }
     public void write_markers(ArrayList<OverlayItem> items){
         //items.get(ind).getPoint().getLongitude()
@@ -269,56 +185,5 @@ public class Forest implements Serializable {
             e.printStackTrace();
         }
         return items;
-    }
-    public void read_allwalks(){
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(
-                    path + "/" + num + "/walk_names.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                all_walks.add(line);
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void write_all_walks(){
-        try(FileWriter log = new FileWriter(path + "/" + num + "/walk_names.txt", false)) {
-            for (String name : all_walks){
-                log.write(name + "\n");
-            }
-            log.flush();
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        }
-    }
-    public void remove_last_walk(){
-        File directory = new File(
-                path + "/" + num + "/" + number_of_walks);
-        deleteRecursive(directory);
-        String name_last = all_walks.get(number_of_walks-1);
-        walk_filter_map.remove(name_last);
-        all_walks.remove(number_of_walks-1);
-        write_all_walks();
-        number_of_walks--;
-        upd_num_walks_file();
-        //если прогулка была подгружена, удаляем из списка
-        for (Walk w : walk_list){
-            if (w.name == name_last){
-                walk_list.remove(w);
-            }
-        }
-
-    }
-    void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles())
-                deleteRecursive(child);
-
-        fileOrDirectory.delete();
     }
 }

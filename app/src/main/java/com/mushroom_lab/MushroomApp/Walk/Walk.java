@@ -35,41 +35,6 @@ public class Walk implements Serializable{
         //first order rough approx!
         return (float) (R_earth*(Math.toRadians(x_t) -  Math.toRadians(x_my)));
     }
-    public void SaveWalk(File path, int numForest, int numWalk) {
-        File directory = new File(
-                path + "/" + numForest  + "/" + numWalk);
-        directory.mkdirs();
-        //Mushrooms
-        try(FileWriter mushfile = new FileWriter(
-                path + "/" + numForest  + "/" + numWalk + "/mushrooms.txt", false)) {
-            for (Grib gr: grib_list) {
-                mushfile.write(Double.toString(gr.x));
-                mushfile.append(' ');
-                mushfile.write(Double.toString(gr.y));
-                mushfile.append(' ');
-                mushfile.write(gr.type);
-                mushfile.append('\n');
-            }
-            mushfile.flush();
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        }
-        //Walk_trajectory
-        try(FileWriter trajfile = new FileWriter(
-                path + "/" + numForest  + "/" + numWalk + "/trajectory.txt", false)) {
-            for (int i=0; i < x_traj.size(); i++) {
-                trajfile.write(Double.toString(x_traj.get(i)));
-                trajfile.append(' ');
-                trajfile.write(Double.toString(y_traj.get(i)));
-                trajfile.append('\n');
-            }
-            trajfile.flush();
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        }
-    }
     public void saveDb(SQLiteDatabase db, int numForest, String name, boolean flag_save) {
         for (Grib gr: grib_list) {
             //db.execSQL("INSERT INTO mushs (forest, walk_name, type, x, y) VALUES (0, 0, 'white', 0, 0)");

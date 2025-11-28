@@ -95,9 +95,6 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
                 Boolean remove_flag = intent.getBooleanExtra("Remove_flag", false);
                 //какие походы отрисовывать, boolean массив в объекте фильтр
                 Filter f_walks = (Filter) intent.getSerializableExtra("filter_walks");
-                if (remove_flag){
-                    forest.remove_last_walk();
-                }
                 if (f_walks != null){
                     forest.walk_list.clear();
                     forest.walk_list.add(walk);
