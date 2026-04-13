@@ -95,6 +95,13 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
                 Boolean remove_flag = intent.getBooleanExtra("Remove_flag", false);
                 //какие походы отрисовывать, boolean массив в объекте фильтр
                 Filter f_walks = (Filter) intent.getSerializableExtra("filter_walks");
+                String marker = intent.getStringExtra("marker");
+                if (marker != null){
+                    items.add(new OverlayItem(marker, "Description",
+                            new GeoPoint(me.x, me.y)));
+                    update_overlay();
+                    forest.write_markers_sql(items, db);
+                }
                 if (f_walks != null){
                     forest.walk_list.clear();
                     forest.walk_list.add(walk);
@@ -110,6 +117,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
                     walk.finding(me.x, me.y, type);
                     forest.addGrib(me.x, me.y, type);
                 }
+                //дописать добавление маркера с названием
             }
         }
     });
@@ -244,10 +252,10 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         mStartForResult.launch(intent);
     }
     public void add_marker(View v){
-        items.add(new OverlayItem("Forest", "Description",
-                new GeoPoint(me.x, me.y)));
-        update_overlay();
-        forest.write_markers(items);
+        //надо запросить название метки
+        Intent intent = new Intent(this, MarkerActivity.class);
+        intent.putExtra(Forest.class.getSimpleName(), forest);
+        mStartForResult.launch(intent);
     }
     public void update_overlay(){
         map.getOverlays().remove(ForestItemizedIconOverlay);
@@ -279,7 +287,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         if (time == 0) {
             forest = new Forest(walk, me.x, me.y, num, path, db);
             map.getOverlays().add(myGroundOverlay);
-            items = forest.read_markers();
+            items = forest.read_markers_sql(db);
             ForestItemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(
                     this, items, myOnItemGestureListener);
             map.getOverlays().add(ForestItemizedIconOverlay);
@@ -323,7 +331,7 @@ public class WalkActivity extends AppCompatActivity implements ItemRemoveInterfa
         Toast toast = Toast.makeText(this,
                 "метка удалена", Toast.LENGTH_LONG);
         toast.show();
-        forest.write_markers(items);
+        forest.write_markers_sql(items, db);
     }
     // Function to get the current location (and request permission)
     public void getCurrentLocation() {

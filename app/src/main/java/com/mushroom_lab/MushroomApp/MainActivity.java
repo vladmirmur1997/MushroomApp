@@ -60,14 +60,12 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
 
         db = getBaseContext().openOrCreateDatabase("mushs.db", MODE_PRIVATE, null);
         //создаем все таблицы
-        //db.execSQL("DROP TABLE IF EXISTS walks");
-        //db.execSQL("DROP TABLE IF EXISTS mushs");
-        //db.execSQL("DROP TABLE IF EXISTS trajs");
-        //db.execSQL("DROP TABLE IF EXISTS forests");
+        //db.execSQL("DROP TABLE IF EXISTS markers");
         db.execSQL("CREATE TABLE IF NOT EXISTS forests (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS mushs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, type TEXT, x REAL, y REAL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS trajs (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_name TEXT, x REAL, y REAL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS walks (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, walk_num INTEGER, walk_name TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS markers (_id INTEGER PRIMARY KEY AUTOINCREMENT, forest INTEGER, marker_name TEXT, x REAL, y REAL)");
         //добавляем лес по умолчанию
         Cursor query = db.rawQuery("SELECT * FROM forests;", null);
         if (query.getCount() ==0 ){db.execSQL("INSERT INTO forests (name) VALUES ('Les1')");}
@@ -127,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements RemoveInterface {
             db.execSQL("DELETE FROM walks WHERE forest = " + ID);
             db.execSQL("DELETE FROM mushs WHERE forest = " + ID);
             db.execSQL("DELETE FROM trajs WHERE forest = " + ID);
+            db.execSQL("DELETE FROM markers WHERE forest = " + ID);
         }
         upd_adapter();
 

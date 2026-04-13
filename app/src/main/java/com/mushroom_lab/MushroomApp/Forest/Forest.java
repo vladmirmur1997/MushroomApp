@@ -182,4 +182,33 @@ public class Forest implements Serializable {
         }
         return items;
     }
+    public ArrayList<OverlayItem> read_markers_sql(SQLiteDatabase db){
+        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+        Cursor cur =  db.rawQuery("SELECT * FROM markers WHERE forest = " + this.num + ";", null);
+        if(cur.moveToFirst()) {
+            do {
+                Double x = cur.getDouble(3);
+                Double y = cur.getDouble(4);
+                String name = cur.getString(2);
+                items.add(new OverlayItem(name, "Description",
+                        new GeoPoint(x, y)));
+                // do what ever you want here
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        return items;
+    }
+    public void write_markers_sql(ArrayList<OverlayItem> items, SQLiteDatabase db){
+        //items.get(ind).getPoint().getLongitude()
+        //удалить прошлое
+        db.execSQL("DELETE FROM markers WHERE forest = " + this.num);
+        for (OverlayItem it : items) {
+            double x = it.getPoint().getLatitude();
+            double y = it.getPoint().getLongitude();
+            String name = it.getTitle();
+            db.execSQL("INSERT INTO markers (forest, marker_name, x, y) " +
+                    "VALUES (" + this.num + ", '" + name + "', " +
+                    x + ", " + y + ")");
+        }
+    }
 }
